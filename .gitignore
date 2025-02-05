@@ -1,6 +1,10 @@
 # java
-*/target/*
+target/*
 
 # intellij
 .idea/
 *.iml
+
+# sensitive
+*.json
+tokens/*
