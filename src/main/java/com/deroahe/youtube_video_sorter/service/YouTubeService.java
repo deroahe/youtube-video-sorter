@@ -1,10 +1,9 @@
-package com.deroahe.youtube_video_sorter.service.youtube;
+package com.deroahe.youtube_video_sorter.service;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
@@ -29,8 +28,6 @@ public class YouTubeService {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final List<String> SCOPES = Collections.singletonList(YouTubeScopes.YOUTUBE_FORCE_SSL);
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
-    public YouTubeService() {}
 
     public Credential authorize() throws IOException, GeneralSecurityException {
         InputStream in = getClass().getClassLoader().getResourceAsStream(CLIENT_SECRET_FILE);

@@ -1,4 +1,4 @@
-package com.deroahe.youtube_video_sorter.service.youtube;
+package com.deroahe.youtube_video_sorter.service;
 
 import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
@@ -57,12 +57,12 @@ public class YouTubePlaylistService {
         // Callback to handle batch responses
         JsonBatchCallback<PlaylistItem> callback = new JsonBatchCallback<>() {
             @Override
-            public void onSuccess(PlaylistItem playlistItem, HttpHeaders httpHeaders) throws IOException {
+            public void onSuccess(PlaylistItem playlistItem, HttpHeaders httpHeaders) {
                 LOGGER.info("Updated video position: {}", playlistItem.getId());
             }
 
             @Override
-            public void onFailure(GoogleJsonError googleJsonError, HttpHeaders httpHeaders) throws IOException {
+            public void onFailure(GoogleJsonError googleJsonError, HttpHeaders httpHeaders) {
                 LOGGER.error("Failed to update video position: {}", googleJsonError.getMessage());
             }
         };

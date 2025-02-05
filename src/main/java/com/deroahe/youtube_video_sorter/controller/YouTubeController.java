@@ -1,6 +1,6 @@
-package com.deroahe.youtube_video_sorter.controller.youtube;
+package com.deroahe.youtube_video_sorter.controller;
 
-import com.deroahe.youtube_video_sorter.service.youtube.YouTubePlaylistService;
+import com.deroahe.youtube_video_sorter.service.YouTubePlaylistService;
 import com.google.api.services.youtube.model.Playlist;
 import org.springframework.web.bind.annotation.*;
 
