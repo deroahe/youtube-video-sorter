@@ -2,6 +2,7 @@ package com.deroahe.youtube_video_sorter.controller;
 
 import com.deroahe.youtube_video_sorter.service.YouTubePlaylistService;
 import com.google.api.services.youtube.model.Playlist;
+import com.google.api.services.youtube.model.PlaylistItem;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -19,8 +20,13 @@ public class YouTubeController {
     }
 
     @GetMapping
-    public List<Playlist> getPlayListIds() throws IOException, GeneralSecurityException {
+    public List<Playlist> getAllPlaylists() throws IOException, GeneralSecurityException {
         return youTubePlaylistService.getAllPlaylists();
+    }
+
+    @GetMapping("/{playlistId}")
+    public List<PlaylistItem> getAllVideoNumbersInPlaylist(@PathVariable(name = "playlistId") final String playlistId) throws GeneralSecurityException, IOException {
+        return youTubePlaylistService.getVideosInPlaylist(playlistId);
     }
 
     @PostMapping("/{playlistId}")
