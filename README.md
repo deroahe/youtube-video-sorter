@@ -45,7 +45,7 @@ Using the application:
 - sorting your playlist:
   - there are 2 query parameters that you can add to the request URL:
     - ascending -> true by default (if not inputted) -> determines if the playlist should be sorted ascending (when true) or descending (when false)
-    - sortMethod:
+    - sortType:
       - WHOLE_TITLE_ALPHABETICAL by default (if not inputted) -> specifies that the playlist should be sorted by the title, alphabetically
       - HASHTAG_NUMBER_NUMERICAL -> specifies a number should be extracted from each video's title and then used in numerical sorting; this number can be either the first number that follows the first hashtag (#) or if there are no hashtags in the title, then it will be the first number encountered in the title
   - sorting your playlist alphabetically ascending (A to Z):
@@ -58,11 +58,11 @@ Using the application:
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist numerically ascending (A to Z):
     - open Postman and import the following curl command (or run directly from your terminal) 
-    - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortMethod=HASHTAG_NUMBER_NUMERICAL&ascending=true'
+    - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortType=HASHTAG_NUMBER_NUMERICAL&ascending=true'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist alphabetically descending (Z to A):
     - open Postman and import the following curl command (or run directly from your terminal) 
-    - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortMethod=HASHTAG_NUMBER_NUMERICAL&ascending=false'
+    - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortType=HASHTAG_NUMBER_NUMERICAL&ascending=false'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
 
 ## IMPORTANT:

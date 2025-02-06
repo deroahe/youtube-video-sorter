@@ -1,6 +1,6 @@
 package com.deroahe.youtube_video_sorter.controller;
 
-import com.deroahe.youtube_video_sorter.model.SortMethod;
+import com.deroahe.youtube_video_sorter.support.model.SortType;
 import com.deroahe.youtube_video_sorter.service.YouTubePlaylistService;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
@@ -32,9 +32,9 @@ public class YouTubeController {
 
     @PostMapping("/{playlistId}")
     public void sortPlaylist(@PathVariable(name = "playlistId") final String playlistId,
-                             @RequestParam(name = "sortMethod", required = false, defaultValue = "WHOLE_TITLE_ALPHABETICAL") final SortMethod sortMethod,
+                             @RequestParam(name = "sortType", required = false, defaultValue = "WHOLE_TITLE_ALPHABETICAL") final SortType sortType,
                              @RequestParam(name = "ascending", required = false, defaultValue = "true") boolean ascending)
             throws GeneralSecurityException, IOException {
-        youTubePlaylistService.updatePlaylistOrder(playlistId, sortMethod, ascending);
+        youTubePlaylistService.updatePlaylistOrder(playlistId, sortType, ascending);
     }
 }
