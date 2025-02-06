@@ -31,7 +31,8 @@ Before running the application:
 
 Running the application:
 - open a terminal at the project's root location
-- run the following command > ./mvnw spring-boot:run
+- run the following command
+  - > ./mvnw spring-boot:run
 
 Using the application:
 - the application needs an authentication token do its thing, so for the first time you run the application and also every time your token expires, you have to authenticate the app like described below: 
