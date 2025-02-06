@@ -2,7 +2,6 @@ package com.deroahe.youtube_video_sorter.support;
 
 import com.google.api.services.youtube.model.PlaylistItem;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -17,26 +16,24 @@ public class SortMethods {
 
     public static List<PlaylistItem> getSortedAlphabetical(final List<PlaylistItem> videos, final boolean ascending) {
         final Comparator<PlaylistItem> titleComparator = Comparator.comparing(video -> video.getSnippet().getTitle().toLowerCase());
-        final var videosCopy = new ArrayList<>(videos);
 
         if (ascending) {
-            videosCopy.sort(titleComparator);
+            videos.sort(titleComparator);
         } else {
-            videosCopy.sort(titleComparator.reversed());
+            videos.sort(titleComparator.reversed());
         }
-        return videosCopy;
+        return videos;
     }
 
     public static List<PlaylistItem> getSortedNumerical(final List<PlaylistItem> videos, final boolean ascending) {
         final Comparator<PlaylistItem> hashtagNumberComparator = Comparator.comparing(video -> extractVideoNumber(video.getSnippet().getTitle().toLowerCase()));
-        final var videosCopy = new ArrayList<>(videos);
 
         if (ascending) {
-            videosCopy.sort(hashtagNumberComparator);
+            videos.sort(hashtagNumberComparator);
         } else {
-            videosCopy.sort(hashtagNumberComparator.reversed());
+            videos.sort(hashtagNumberComparator.reversed());
         }
-        return videosCopy;
+        return videos;
     }
 
     public static int extractVideoNumber(final String title) {
