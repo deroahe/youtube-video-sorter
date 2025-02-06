@@ -7,7 +7,7 @@ In order to be able to run this application and actually sort your videos, there
 ### tl;dr you have to go to the Google Cloud Console of your Google account, set up a new project, create an OAuth client ID and add the JSON object to the project's resources
 I'll list the detailed steps below.
 
-Before running the application:
+### Before running the application:
 - go to the Google Cloud Console
 - create a new project and select it
 - go to your new project's APIs & Services > Enabled APIs & services
@@ -30,12 +30,12 @@ Before running the application:
 - rename the downloaded file "client_secret.json" and move it to the resources directory (.../youtube-video-sorter/src/main/resources)
 - you're ready to run the application
 
-Running the application:
+### Running the application:
 - open a terminal at the project's root location
 - run the following command
   - > ./mvnw spring-boot:run
 
-Using the application:
+### Using the application:
 - the application needs an authentication token do its thing, so for the first time you run the application and also every time your token expires, you have to authenticate the app like described below: 
   - when calling any endpoint of the application, you will see a link in the application console that redirects you to the Google OAuth consent screen
   - click the link, log in with the Google account that you used to create the OAuth client ID and allow the application to access your YouTube account
