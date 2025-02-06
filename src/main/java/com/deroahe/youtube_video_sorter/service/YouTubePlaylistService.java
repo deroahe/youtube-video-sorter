@@ -1,6 +1,6 @@
 package com.deroahe.youtube_video_sorter.service;
 
-import com.google.api.services.youtube.YouTube;
+import com.deroahe.youtube_video_sorter.model.SortMethod;
 import com.google.api.services.youtube.model.*;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -20,8 +19,8 @@ public class YouTubePlaylistService {
 
     private static final Logger LOGGER = getLogger(YouTubePlaylistService.class);
 
-    private static final Pattern VIDEO_NUMBER_PATTERN = Pattern.compile("#(\\d+)");
-    private static final Pattern VIDEO_NUMBER_PATTERN_BACKUP = Pattern.compile("(\\d+)");
+    private static final Pattern VIDEO_HASHTAG_NUMBER_PATTERN = Pattern.compile("#(\\d+)");
+    private static final Pattern VIDEO_HASHTAG_NUMBER_PATTERN_BACKUP = Pattern.compile("(\\d+)");
 
     private final YouTubeService youTubeService;
 
@@ -30,104 +29,145 @@ public class YouTubePlaylistService {
     }
 
     public List<Playlist> getAllPlaylists() throws GeneralSecurityException, IOException {
-        YouTube youtubeService = youTubeService.getYouTubeService();
+        LOGGER.info("Fetching all playlists");
 
-        YouTube.Playlists.List request = youtubeService.playlists()
-                .list("snippet,contentDetails")
-                .setMine(true) // Fetch only the playlists from the authenticated user
-                .setMaxResults(50L);
+        final var youtubeService = youTubeService.getYouTubeService();
+        int requestsMade = 0;
 
-        PlaylistListResponse response = request.execute();
-        final var playlists = response.getItems();
-        LOGGER.info("Playlists found: {}", playlists.size());
+        List<Playlist> playlists = new ArrayList<>();
+        String nextPageToken = null;
+
+        do {
+            final var request = youtubeService.playlists()
+                    .list("snippet,contentDetails")
+                    .setMine(true) // Fetch only the playlists from the authenticated user
+                    .setMaxResults(50L)
+                    .setPageToken(nextPageToken);
+
+            final var response = request.execute();
+            requestsMade++;
+
+            for (final var playList : response.getItems()) {
+                final var title = playList.getSnippet().getTitle();
+                LOGGER.info("Fetched playlist {}", title);
+            }
+
+            playlists.addAll(response.getItems());
+            nextPageToken = response.getNextPageToken();
+        } while (nextPageToken != null);
+
+        LOGGER.info("Playlists found: {}. Requests made {} ({} queries)", playlists.size(), requestsMade, requestsMade);
 
         return playlists;
     }
 
-    public void updatePlaylistOrder(String playlistId) throws GeneralSecurityException, IOException {
+    public void updatePlaylistOrder(final String playlistId, final SortMethod sortMethod, final boolean ascending)
+            throws GeneralSecurityException, IOException {
         LOGGER.info("Updating video order for playlist {}", playlistId);
 
-        YouTube youtubeService = youTubeService.getYouTubeService();
-        List<PlaylistItem> sortedVideos = getSortedVideos(playlistId);
+        final var youtubeService = youTubeService.getYouTubeService();
+        final var sortedVideos = getSortedVideos(playlistId, sortMethod, ascending);
 
         int updateRequestsMade = 0;
+
         for (int i = 0; i < sortedVideos.size(); i++) {
-            PlaylistItem video = sortedVideos.get(i);
+            final var video = sortedVideos.get(i);
+            final var videoTitle = video.getSnippet().getTitle();
+            final var videoPosition = video.getSnippet().getPosition();
 
-            final var playListItemPosition = video.getSnippet().getPosition();
-
-            if (playListItemPosition == i) {
+            if (videoPosition == i) {
                 continue;
             }
 
-            YouTube.PlaylistItems.Update updateRequest = youtubeService.playlistItems()
-                    .update("snippet",
-                            new PlaylistItem()
-                                    .setId(video.getId())
-                                    .setSnippet(video.getSnippet().setPosition((long) i)));
-
+            final var updateRequest = youtubeService.playlistItems()
+                    .update("snippet", new PlaylistItem()
+                            .setId(video.getId())
+                            .setSnippet(video.getSnippet().setPosition((long) i)));
             updateRequest.execute();
-            LOGGER.info("Request sent for video {}", video.getId());
             updateRequestsMade++;
+
+            LOGGER.info("Request sent for video {}", videoTitle);
         }
 
-        LOGGER.info("Made {} update requests", updateRequestsMade);
+        LOGGER.info("Updated playlist {}. Requests made: {} ({} queries)", playlistId, updateRequestsMade, updateRequestsMade * 50);
     }
 
-    public List<PlaylistItem> getSortedVideos(String playlistId) throws GeneralSecurityException, IOException {
+    public List<PlaylistItem> getSortedVideos(final String playlistId, final SortMethod sortMethod, final boolean ascending)
+            throws GeneralSecurityException, IOException {
         LOGGER.info("Sorting videos in playlist {}", playlistId);
 
-        List<PlaylistItem> videos = getVideosInPlaylist(playlistId);
+        final var videos = getVideosInPlaylist(playlistId);
 
-        videos.sort(Comparator.comparing(item -> {
+        final Comparator<PlaylistItem> hashtagNumberComparator = Comparator.comparing(item -> {
             final var title = item.getSnippet().getTitle().toLowerCase();
             return extractVideoNumber(title);
-        }));
+        });
+
+        final Comparator<PlaylistItem> titleComparator = Comparator.comparing(item -> item.getSnippet().getTitle().toLowerCase());
+
+        switch (sortMethod) {
+            case HASHTAG_NUMBER_NUMERICAL -> {
+                if (ascending) {
+                    videos.sort(hashtagNumberComparator);
+                } else {
+                    videos.sort(hashtagNumberComparator.reversed());
+                }
+            }
+            case WHOLE_TITLE_ALPHABETICAL -> {
+                if (ascending) {
+                    videos.sort(titleComparator);
+                } else {
+                    videos.sort(titleComparator.reversed());
+                }
+            }
+            default -> throw new IllegalArgumentException("Unknown sort method: " + sortMethod);
+        }
 
         return videos;
     }
 
-    public List<PlaylistItem> getVideosInPlaylist(String playlistId) throws GeneralSecurityException, IOException {
-        LOGGER.info("Fetching videos in playlist {}", playlistId);
+    public List<PlaylistItem> getVideosInPlaylist(final String playlistId) throws GeneralSecurityException, IOException {
+        LOGGER.info("Fetching all videos in playlist {}", playlistId);
 
+        final var youtubeService = youTubeService.getYouTubeService();
         int requestsMade = 0;
-        YouTube youtubeService = youTubeService.getYouTubeService();
 
         List<PlaylistItem> videos = new ArrayList<>();
         String nextPageToken = null;
 
         do {
-            YouTube.PlaylistItems.List request = youtubeService.playlistItems()
+            final var request = youtubeService.playlistItems()
                     .list("snippet")
                     .setPlaylistId(playlistId)
                     .setMaxResults(50L) // Max allowed per request
                     .setPageToken(nextPageToken);
 
-            PlaylistItemListResponse response = request.execute();
+            final var response = request.execute();
             requestsMade++;
 
-            for (PlaylistItem item : response.getItems()) {
+            for (final var item : response.getItems()) {
                 final var title = item.getSnippet().getTitle();
-                final var videoNumber = extractVideoNumber(title);
-                LOGGER.info("Fetched video with number {}", videoNumber);
+                LOGGER.info("Fetched video {}", title);
             }
 
             videos.addAll(response.getItems());
             nextPageToken = response.getNextPageToken();
         } while (nextPageToken != null);
 
-        LOGGER.info("Videos found in playlist {}: {}. Requests made: {}", playlistId, videos.size(), requestsMade);
+        LOGGER.info("Videos found in playlist {}: {}. Requests made: {} ({} queries)", playlistId, videos.size(),
+                requestsMade, requestsMade);
+
         return videos;
     }
 
     public static int extractVideoNumber(final String title) {
-        Matcher matcher = VIDEO_NUMBER_PATTERN.matcher(title);
+        final var matcher = VIDEO_HASHTAG_NUMBER_PATTERN.matcher(title);
         int videoNumber;
 
         if (matcher.find()) {
             videoNumber = Integer.parseInt(matcher.group(1));
         } else {
-            Matcher matcherBackup = VIDEO_NUMBER_PATTERN_BACKUP.matcher(title);
+            final var matcherBackup = VIDEO_HASHTAG_NUMBER_PATTERN_BACKUP.matcher(title);
             if (matcherBackup.find()) {
                 videoNumber = Integer.parseInt(matcherBackup.group(1));
             } else {
