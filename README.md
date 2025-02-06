@@ -29,7 +29,6 @@ Before running the application:
 - rename the downloaded file "client_secret.json" and move it to the resources directory (.../youtube-video-sorter/src/main/resources)
 - you're ready to run the application
 
-In order to run the application
 Running the application:
 - open a terminal at the project's root location
 - run the following command > ./mvnw spring-boot:run
