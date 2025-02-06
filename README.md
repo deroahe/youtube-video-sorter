@@ -71,7 +71,7 @@ Using the application:
   - queries consumed when updating video positions in a playlist: 50 queries per 1 position update (if you need to update the positions of 50 videos, you consume 2500 queries)
   - the daily quota is 10,000 queries; that's very little, so you can very easily run out of queries
 ### If you run out of queries:
-- you can either wait until the next day for your quota to refresh
+- you can wait until the next day for your quota to refresh
 - you can make another Google Cloud Console project by following the steps above
   - in case you choose to make a new project, besides adding the new client_secret.json to the resources, you also have to REMOVE the token found at .../youtube-video-sorter/tokens
 
