@@ -1,5 +1,6 @@
 # youtube-video-sorter
-A Spring Boot application for sorting videos in YouTube playlists (alphabetically or numerically).
+A Spring Boot application for sorting videos in YouTube playlists by title (alphabetically or numerically).
+Tests for sorting methods included.
 
 In order to be able to run this application and actually sort your videos, there are quite a few preparations steps that must be taken.
 
@@ -58,7 +59,7 @@ Using the application:
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist numerically ascending (A to Z):
     - open Postman and import the following curl command (or run directly from your terminal) 
-    - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortType=HASHTAG_NUMBER_NUMERICAL&ascending=true'
+    - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortType=HASHTAG_NUMBER_NUMERICAL'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist alphabetically descending (Z to A):
     - open Postman and import the following curl command (or run directly from your terminal) 
