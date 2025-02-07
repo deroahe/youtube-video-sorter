@@ -17,12 +17,12 @@ I'll list the detailed steps below.
   - select External and click Create
   - fill in the required fields and click Save and continue
   - click Add or remove scopes
-  - add required YouTube scopes (I use ".../auth/youtube.force-ssl", but if you think that's sus, use what you think is best (as long as it allows the application to read and edit your playlists), but don't forget to also edit the SCOPES list in YouTubeService.class)
+  - add required YouTube scopes (I use ".../auth/youtube.force-ssl", but if you think that's sus, use what you think is best (as long as it allows the application to read and edit your playlists), but don't forget to also edit the SCOPES list in YouTubeService class)
   - click Save and continue
   - add yourself as a test user by clicking Add users, filling in your email and clicking Add
   - click Save and continue
 - go to Enabled APIs & services
-  - click to YouTube Data API v3
+  - click YouTube Data API v3
   - click Credentials
   - click Create credentials and choose OAuth client ID
   - choose Desktop app, fill in the name and click Create
@@ -32,7 +32,7 @@ I'll list the detailed steps below.
 
 ### Running the application:
 - open a terminal at the project's root location
-- run the following command
+- run the following command:
   - > ./mvnw spring-boot:run
 
 ### Using the application:
@@ -40,29 +40,31 @@ I'll list the detailed steps below.
   - when calling any endpoint of the application, you will see a link in the application console that redirects you to the Google OAuth consent screen
   - click the link, log in with the Google account that you used to create the OAuth client ID and allow the application to access your YouTube account
 - fetching your playlists:
-  - open Postman and import the following curl command (or run directly from your terminal) 
+  - open Postman and import the following curl command (or run directly from your terminal): 
     - > curl --location 'http://localhost:8080/api/youtube'
-  - what you will see in the response is a JSON containing all your playlists; find the title of the playlist you want to sort and copy its ID
+  - what you will see in the response is a JSON containing all your playlists; find the title of the playlist you want to sort and copy its ID (the ID attribute will be (at least) one level higher up in the JSON object)
 - sorting your playlist:
   - there are 2 query parameters that you can add to the request URL:
-    - ascending -> true by default (if not inputted) -> determines if the playlist should be sorted ascending (when true) or descending (when false)
-    - sortType:
-      - WHOLE_TITLE_ALPHABETICAL by default (if not inputted) -> specifies that the playlist should be sorted by the title, alphabetically
-      - HASHTAG_NUMBER_NUMERICAL -> specifies a number should be extracted from each video's title and then used in numerical sorting; this number can be either the first number that follows the first hashtag (#) or if there are no hashtags in the title, then it will be the first number encountered in the title
+    - **ascending** - can be one of the following values:
+      - true (default value) => specifies that the playlist should be sorted using ascending order (i.e.: A to Z or 1 to 9)
+      - false => specifies that the playlist should be sorted using descending order (i.e.: Z to A or 9 to 1)
+    - **sortType** - can be one of the following values:
+      - WHOLE_TITLE_ALPHABETICAL (default value) => specifies that the playlist should be sorted by the title, alphabetically
+      - HASHTAG_NUMBER_NUMERICAL => specifies a number should be extracted from each video's title and then used in numerical sorting; this number can be either the first number that follows the first hashtag (#) or if there are no hashtags in the title, then it will be the first number encountered in the title
   - sorting your playlist alphabetically ascending (A to Z):
-    - open Postman and import the following curl command (or run directly from your terminal) 
+    - open Postman and import the following curl command (or run directly from your terminal):
     - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist alphabetically descending (Z to A):
-    - open Postman and import the following curl command (or run directly from your terminal) 
+    - open Postman and import the following curl command (or run directly from your terminal):
     - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?ascending=false'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist numerically ascending (A to Z):
-    - open Postman and import the following curl command (or run directly from your terminal) 
+    - open Postman and import the following curl command (or run directly from your terminal):
     - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortType=HASHTAG_NUMBER_NUMERICAL'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
   - sorting your playlist alphabetically descending (Z to A):
-    - open Postman and import the following curl command (or run directly from your terminal) 
+    - open Postman and import the following curl command (or run directly from your terminal):
     - > curl --location --request POST 'http://localhost:8080/api/youtube/playlistId?sortType=HASHTAG_NUMBER_NUMERICAL&ascending=false'
     - don't forget to replace "playlistId" with the ID of the playlist you want to sort
 
